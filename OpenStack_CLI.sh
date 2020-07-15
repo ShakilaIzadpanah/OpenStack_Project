@@ -18,15 +18,17 @@ do
  elif [[ "$request" == "help" ]]
  then 
    echo " "
-   echo "************** The Commands Format **************"
+   echo "******************************************* The Commands Format ********************************************"
    echo "info               Project and developers information."
-   echo "instance           Show list of instances."
-   echo "del instance       Delete an instance."
+   echo "list instance      Show list of instances."
+   echo "delete instance    Delete an instance."
+   echo "create instance    Create an instance using your intended parameters as described below:"
+   echo "                   instance name | instance password | flavor | image | network | keypair | security group."
    echo "exit               Quit the shell script."
- elif [[ "$request" == "instance" ]]
+ elif [[ "$request" == "list instance" ]]
  then
    eval "openstack server list"
- elif [[ "$request" == "del instance" ]]
+ elif [[ "$request" == "delete instance" ]]
  then
    echo "These are the list of instances:"
    eval "openstack server list"
@@ -72,6 +74,23 @@ do
     j=$((j+1))
    done
    eval "openstack server create --flavor $flavor_name --image $image_name --network $network_name --key-name $keypair_name $instance_name"
+   len=${#securitygroups[@]}
+   for (( i=0; i<$len; i++ ));
+   do
+    eval "openstack server add security group $instance_name ${securitygroups[$i]}";
+   done
+   echo "Server $instance_name successfully created"
+ elif [[ "$request" != "exit" ]]
+ then
+   echo "Your entered command format is wrong..."
+   echo "Enter a command from below list..."
+   echo " "
+   echo "info                     Project and developers information."
+   echo "instance                 Show list of instances."
+   echo "delete instance          Delete an instance."
+   echo "create instance          Create an instance using your intended parameters as described below:"
+   echo "                         instance name | instance password | flavor | image | network | keypair | securitu group."
+   echo "exit                     Quit the shell script."
  fi
 done
 
