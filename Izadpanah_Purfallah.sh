@@ -3,7 +3,7 @@ request="start"
 while [[ "$request" != "exit" ]]
 do
  echo " "
- echo "Please Enter Your Request (Enter exit to quit the program...)"
+ echo "Please Enter Your Request (Enter exit to quit the shell script...)!"
  read request
  if [[ "$request" == "info" ]]
  then 
@@ -21,8 +21,9 @@ do
   echo "**************The commands format**************" 
   echo "info              Project and developers information."
   echo "user              Show list of users."
-  echo "instance          Show list of instance."
+  echo "instance          Show list of instances."
   echo "del instance      Delete an instance."
+  echo "exit              quit the shell script."
  elif [[ "$request" == "user" ]]
  then
   eval "openstack user list"
