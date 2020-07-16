@@ -1,5 +1,9 @@
 #!/bin/bash
 request="start"
+echo " "
+echo "                  *****************************                    "
+echo "It is essential to execute 'run openrc' command for authenticating!"
+echo "                  *****************************                    "
 while [[ "$request" != "exit" ]]
 do
  echo "  "
@@ -20,11 +24,24 @@ do
    echo " "
    echo "******************************************* The Commands Format ********************************************"
    echo "info               Project and developers information."
+   echo "run openrc         Authenticate user."
    echo "list instance      Show list of instances."
    echo "delete instance    Delete an instance."
    echo "create instance    Create an instance using your intended parameters as described below:"
-   echo "                   instance name | instance password | flavor | image | network | keypair | security group."
+   echo "                   instance name | instance password | flavor | image | network | keypair | security groups."
    echo "exit               Quit the shell script."
+ elif [[ "$request" == "run openrc" ]]
+ then
+   if [ -f "ouropenrc" ]
+   then
+    eval ". ouropenrc"
+   else
+    eval "touch ouropenrc"
+    echo "Enter openrc file address..."
+    read file_address
+    eval "cp $file_address  ouropenrc"
+    eval ". ouropenrc" 
+   fi
  elif [[ "$request" == "list instance" ]]
  then
    eval "openstack server list"
@@ -43,6 +60,7 @@ do
    read instance_name
    echo "Please enter your password..."
    read instance_password
+   echo "password: $instance_password chpasswd: { expire: False } ssh_pwauth: True" >  user_data
    echo "These are the list of flavors:"
    eval "openstack flavor list"
    echo "Enter flavor name..."
@@ -71,9 +89,14 @@ do
     securitygroups[$j]="$security_group_name"
     echo "To add another security group enter 'yes' otherwise enter 'cancel'..."
     read choose
+    while [[ "$choose" != "yes" ]] && [[ "$choose" != "cancel" ]]
+    do
+     echo "To add another security group enter 'yes' otherwise enter 'cancel'..."
+     read choose
+    done
     j=$((j+1))
    done
-   eval "openstack server create --flavor $flavor_name --image $image_name --network $network_name --key-name $keypair_name $instance_name"
+   eval "openstack server create --flavor $flavor_name --image $image_name --network $network_name --key-name $keypair_name --user-data user_data  $instance_name"
    len=${#securitygroups[@]}
    for (( i=0; i<$len; i++ ));
    do
@@ -89,7 +112,7 @@ do
    echo "instance                 Show list of instances."
    echo "delete instance          Delete an instance."
    echo "create instance          Create an instance using your intended parameters as described below:"
-   echo "                         instance name | instance password | flavor | image | network | keypair | securitu group."
+   echo "                         instance name | instance password | flavor | image | network | keypair | securitu groups."
    echo "exit                     Quit the shell script."
  fi
 done
