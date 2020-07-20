@@ -44,16 +44,24 @@ do
    fi
  elif [[ "$request" == "list instance" ]]
  then
-   eval "openstack server list"
+   if [ -f "ouropenrc" ]
+   then
+       eval ". ouropenrc"
+       eval "openstack server list"
+   fi
  elif [[ "$request" == "delete instance" ]]
  then
-   echo "These are the list of instances:"
-   eval "openstack server list"
-   echo " "
-   echo "Select your intended instance..."
-   read instance_name
-   eval "openstack server delete $instance_name"
-   echo "Server $instance_name successfully deleted!"
+    if [ -f "ouropenrc" ]
+    then
+        eval ". ouropenrc"
+        echo "These are the list of instances:"
+        eval "openstack server list"
+        echo " "
+        echo "Select your intended instance..."
+        read instance_name
+        eval "openstack server delete $instance_name"
+        echo "Server $instance_name successfully deleted!"
+    fi
  elif [[ "$request" == "create instance" ]]
  then
    echo "Please enter your instance name..."
